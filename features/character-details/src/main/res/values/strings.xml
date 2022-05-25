@@ -1,0 +1,12 @@
+<resources>
+    <string name="character_pic_content_description">Character profile picture</string>
+    <string name="name_label">Name:</string>
+    <string name="gender_label">Gender:</string>
+    <string name="status_label">Status:</string>
+    <string name="species_label">Species:</string>
+    <string name="creation_date_label">Created:</string>
+    <string name="gender">Gender</string>
+    <string name="status">Status</string>
+    <string name="species">Species</string>
+    <string name="creation_date">Date</string>
+</resources>
