@@ -1,12 +1,13 @@
 package com.chocomiruku.character_details_feature.data
 
 import com.chocomiruku.character_details_feature.domain.repo.CharacterDetailsRepo
-import com.chocomiruku.core.data.cache.CharactersDatabase
+import com.chocomiruku.core.data.cache.dao.CharactersDao
 import com.chocomiruku.core.data.cache.entity.asDomainModel
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class CharacterDetailsRepoImpl(private val database: CharactersDatabase) :
+class CharacterDetailsRepoImpl @Inject constructor(private val charactersDao: CharactersDao) :
     CharacterDetailsRepo {
     override fun getCharacter(characterId: Int) =
-        database.charactersDao().getCharacter(characterId).map { it.asDomainModel() }
+        charactersDao.getCharacter(characterId).map { it.asDomainModel() }
 }

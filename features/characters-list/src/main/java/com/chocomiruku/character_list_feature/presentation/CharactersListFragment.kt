@@ -10,28 +10,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
-import androidx.paging.PagingData
 import androidx.paging.filter
 import androidx.recyclerview.widget.RecyclerView
 import com.chocomiruku.character_list_feature.R
 import com.chocomiruku.character_list_feature.databinding.FragmentCharactersListBinding
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 
-
+@AndroidEntryPoint
 class CharactersListFragment : Fragment() {
 
     private var _binding: FragmentCharactersListBinding? = null
     private val binding get() = _binding!!
-    private lateinit var viewModel: CharactersListViewModel
+    private val viewModel: CharactersListViewModel by viewModels()
 
     private val characterPagingAdapter: CharacterPagingAdapter by lazy {
         CharacterPagingAdapter()
@@ -42,12 +40,6 @@ class CharactersListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCharactersListBinding.inflate(inflater, container, false)
-
-        val activity = requireNotNull(this.activity)
-        viewModel = ViewModelProvider(
-            this,
-            CharactersListViewModelFactory(activity.application)
-        )[CharactersListViewModel::class.java]
 
         setup()
         bindLoadingStates(CharactersLoadStateAdapter { characterPagingAdapter.retry() })
@@ -89,7 +81,7 @@ class CharactersListFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.charactersPagingDataFlow
                 .distinctUntilChanged()
-                .collectLatest { pagingData ->
+                .collect { pagingData ->
                     characterPagingAdapter.submitData(pagingData.filter { character ->
                         character.name.lowercase().contains(query.lowercase())
                     })

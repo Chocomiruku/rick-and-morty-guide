@@ -7,29 +7,19 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.chocomiruku.character_details_feature.R
 import com.chocomiruku.character_details_feature.databinding.FragmentCharacterDetailsBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class CharacterDetailsFragment : Fragment() {
 
     private var _binding: FragmentCharacterDetailsBinding? = null
     private val binding get() = _binding!!
-
-    private val viewModel: CharacterDetailsViewModel by lazy {
-        val activity = requireNotNull(this.activity)
-        ViewModelProvider(
-            this,
-            CharacterDetailsViewModelFactory(
-                arguments?.getString("characterId")?.toInt() ?: 0,
-                activity.application
-            )
-        )[CharacterDetailsViewModel::class.java]
-    }
+    private val viewModel: CharacterDetailsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,7 +33,7 @@ class CharacterDetailsFragment : Fragment() {
     }
 
     private fun bindViewModel() {
-        viewModel.character
+        viewModel.getCharacter(arguments?.getString("characterId")?.toInt() ?: 0)
             .observe(viewLifecycleOwner) {
                 binding.nameText.text = it.name
                 updateTitle(it.name)

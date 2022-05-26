@@ -6,16 +6,17 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.chocomiruku.character_list_feature.domain.repo.CharactersListRepo
-import com.chocomiruku.core.data.api.CharactersApiService
+import com.chocomiruku.core.data.api.CharactersApi
 import com.chocomiruku.core.data.cache.CharactersDatabase
 import com.chocomiruku.core.data.cache.entity.asDomainModel
 import com.chocomiruku.core.data.paging.CharactersRemoteMediator
 import com.chocomiruku.core.domain.Character
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class CharactersListRepoImpl(
-    private val service: CharactersApiService,
+class CharactersListRepoImpl @Inject constructor(
+    private val service: CharactersApi,
     private val database: CharactersDatabase
 ) : CharactersListRepo {
 
@@ -24,7 +25,10 @@ class CharactersListRepoImpl(
 
         @OptIn(ExperimentalPagingApi::class)
         return Pager(
-            config = PagingConfig(pageSize = NETWORK_PAGE_SIZE, enablePlaceholders = true),
+            config = PagingConfig(
+                pageSize = NETWORK_PAGE_SIZE,
+                enablePlaceholders = false
+            ),
             remoteMediator = CharactersRemoteMediator(
                 service,
                 database

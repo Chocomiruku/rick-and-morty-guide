@@ -5,19 +5,20 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
-import com.chocomiruku.core.data.api.CharactersApiService
+import com.chocomiruku.core.data.api.CharactersApi
 import com.chocomiruku.core.data.api.asDatabaseModel
 import com.chocomiruku.core.data.cache.CharactersDatabase
 import com.chocomiruku.core.data.cache.entity.CharacterEntity
 import com.chocomiruku.core.data.cache.entity.RemoteKeys
 import retrofit2.HttpException
 import java.io.IOException
+import javax.inject.Inject
 
 private const val STARTING_PAGE_INDEX = 1
 
 @OptIn(ExperimentalPagingApi::class)
-class CharactersRemoteMediator(
-    private val service: CharactersApiService,
+class CharactersRemoteMediator @Inject constructor(
+    private val service: CharactersApi,
     private val charactersDatabase: CharactersDatabase
 ) : RemoteMediator<Int, CharacterEntity>() {
 
