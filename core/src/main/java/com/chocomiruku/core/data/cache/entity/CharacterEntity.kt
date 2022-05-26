@@ -1,4 +1,4 @@
-package com.chocomiruku.core.data.data_sources.local
+package com.chocomiruku.core.data.cache.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -13,7 +13,7 @@ data class CharacterEntity(
     val status: String,
     val species: String,
     val creationDate: String,
-    val picUrl: String
+    val profilePicUrl: String
 )
 
 fun CharacterEntity.asDomainModel(): Character {
@@ -24,7 +24,7 @@ fun CharacterEntity.asDomainModel(): Character {
         status = status,
         species = species,
         creationDate = creationDate,
-        profilePicUrl = picUrl
+        profilePicUrl = profilePicUrl
     )
 }
 
@@ -37,7 +37,7 @@ fun List<CharacterEntity>.asDomainModel(): List<Character> {
             status = it.status,
             species = it.species,
             creationDate = it.creationDate,
-            profilePicUrl = it.picUrl
+            profilePicUrl = it.profilePicUrl
         )
     }
 }

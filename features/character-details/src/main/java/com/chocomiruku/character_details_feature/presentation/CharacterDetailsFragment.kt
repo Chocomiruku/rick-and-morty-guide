@@ -13,7 +13,6 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.chocomiruku.character_details_feature.R
 import com.chocomiruku.character_details_feature.databinding.FragmentCharacterDetailsBinding
-import com.chocomiruku.core.data.Resource
 
 
 class CharacterDetailsFragment : Fragment() {
@@ -44,34 +43,26 @@ class CharacterDetailsFragment : Fragment() {
     }
 
     private fun bindViewModel() {
-        viewModel.characterDetailsStateFlow.asLiveData()
+        viewModel.character
             .observe(viewLifecycleOwner) {
-                when (it) {
-                    is Resource.Loading -> {
-                    }
-                    is Resource.Success -> {
-                        binding.nameText.text = it.data.name
-                        updateTitle(it.data.name)
+                binding.nameText.text = it.name
+                updateTitle(it.name)
 
-                        binding.genderText.text = it.data.gender
-                        binding.statusText.text = it.data.status
-                        binding.speciesText.text = it.data.species
-                        binding.creationDateText.text = it.data.creationDate
-                        val imgUri =
-                            it.data.profilePicUrl.toUri().buildUpon().scheme("https").build()
-                        Glide.with(binding.characterPic.context)
-                            .load(imgUri)
-                            .apply(
-                                RequestOptions()
-                                    .placeholder(R.drawable.loading_anim)
-                                    .centerInside()
-                                    .error(R.drawable.ic_broken_image)
-                            )
-                            .into(binding.characterPic)
-                    }
-                    is Resource.Error -> {
-                    }
-                }
+                binding.genderText.text = it.gender
+                binding.statusText.text = it.status
+                binding.speciesText.text = it.species
+                binding.creationDateText.text = it.creationDate
+                val imgUri =
+                    it.profilePicUrl.toUri().buildUpon().scheme("https").build()
+                Glide.with(binding.characterPic.context)
+                    .load(imgUri)
+                    .apply(
+                        RequestOptions()
+                            .placeholder(R.drawable.loading_anim)
+                            .centerInside()
+                            .error(R.drawable.ic_broken_image)
+                    )
+                    .into(binding.characterPic)
             }
     }
 

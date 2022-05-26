@@ -4,9 +4,8 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.chocomiruku.character_details_feature.data.CharacterDetailsRepoImpl
-import com.chocomiruku.character_details_feature.data.local.CharacterDetailsLocalSourceImpl
 import com.chocomiruku.character_details_feature.domain.usecase.GetCharacterUseCase
-import com.chocomiruku.core.data.data_sources.local.getDatabase
+import com.chocomiruku.core.data.cache.getDatabase
 
 class CharacterDetailsViewModelFactory(
     private val characterId: Int,
@@ -15,8 +14,7 @@ class CharacterDetailsViewModelFactory(
     ViewModelProvider.Factory {
 
     private val database = getDatabase(application)
-    private val localSource = CharacterDetailsLocalSourceImpl(database.charactersDao)
-    private val charactersRepo = CharacterDetailsRepoImpl(localSource)
+    private val charactersRepo = CharacterDetailsRepoImpl(database)
     private val getCharacterUseCase = GetCharacterUseCase(charactersRepo)
 
     @Suppress("unchecked_cast")

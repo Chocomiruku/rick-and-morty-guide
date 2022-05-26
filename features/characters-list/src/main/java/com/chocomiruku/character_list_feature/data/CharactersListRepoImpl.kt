@@ -1,39 +1,43 @@
 package com.chocomiruku.character_list_feature.data
 
-import com.chocomiruku.character_list_feature.data.local.CharactersListLocalSource
-import com.chocomiruku.character_list_feature.data.remote.CharactersListRemoteSource
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.chocomiruku.character_list_feature.domain.repo.CharactersListRepo
-import com.chocomiruku.core.data.NetworkBoundResource
-import com.chocomiruku.core.data.Resource
-import com.chocomiruku.core.data.data_sources.local.asDomainModel
+import com.chocomiruku.core.data.api.CharactersApiService
+import com.chocomiruku.core.data.cache.CharactersDatabase
+import com.chocomiruku.core.data.cache.entity.asDomainModel
+import com.chocomiruku.core.data.paging.CharactersRemoteMediator
 import com.chocomiruku.core.domain.Character
-import com.chocomiruku.core.domain.asDatabaseModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class CharactersListRepoImpl(
-    private val remoteSource: CharactersListRemoteSource,
-    private val localSource: CharactersListLocalSource,
+    private val service: CharactersApiService,
+    private val database: CharactersDatabase
 ) : CharactersListRepo {
-    override suspend fun getCharacters(): Flow<Resource<List<Character>>> {
-        return object : NetworkBoundResource<List<Character>>() {
-            override suspend fun remoteFetch(): Resource<List<Character>> {
-                return remoteSource.getCharacters()
-            }
 
-            override suspend fun saveFetchResult(data: List<Character>) {
-                localSource.saveCharacters(data.asDatabaseModel())
-            }
+    override fun getCharacters(): Flow<PagingData<Character>> {
+        val pagingSourceFactory = { database.charactersDao().getAll() }
 
-            override suspend fun localFetch(): List<Character> {
-                return localSource.getCharacters().asDomainModel()
+        @OptIn(ExperimentalPagingApi::class)
+        return Pager(
+            config = PagingConfig(pageSize = NETWORK_PAGE_SIZE, enablePlaceholders = true),
+            remoteMediator = CharactersRemoteMediator(
+                service,
+                database
+            ),
+            pagingSourceFactory = pagingSourceFactory
+        ).flow.map { pagingData ->
+            pagingData.map {
+                it.asDomainModel()
             }
-
-            override fun shouldFetchWithLocalData() = true
-        }.asFlow()
+        }
     }
 
-    override suspend fun searchCharacters(query: String): Flow<List<Character>> {
-        return localSource.searchCharacters(query).map { it.asDomainModel() }
+    companion object {
+        const val NETWORK_PAGE_SIZE = 20
     }
 }

@@ -1,6 +1,6 @@
-package com.chocomiruku.core.data.data_sources.remote
+package com.chocomiruku.core.data.api
 
-import com.chocomiruku.core.domain.Character
+import com.chocomiruku.core.data.cache.entity.CharacterEntity
 import com.chocomiruku.core.util.formatCreationDate
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
@@ -31,9 +31,9 @@ data class CharacterJson(
     @Json(name = "image") val profilePicUrl: String
 )
 
-fun List<CharacterJson>.asDomainModel(): List<Character> {
+fun List<CharacterJson>.asDatabaseModel(): List<CharacterEntity> {
     return map {
-        Character(
+        CharacterEntity(
             id = it.id,
             name = it.name,
             gender = it.gender,

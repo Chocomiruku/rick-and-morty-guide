@@ -25,6 +25,7 @@
         <entry key="..\:/Users/Chocomilk/AndroidStudioProjects/rick-and-morty-guide/features/characters-list/src/main/res/drawable/ic_loading.xml" value="0.127" />
         <entry key="..\:/Users/Chocomilk/AndroidStudioProjects/rick-and-morty-guide/features/characters-list/src/main/res/layout/fragment_characters_list.xml" value="0.2129115006412997" />
         <entry key="..\:/Users/Chocomilk/AndroidStudioProjects/rick-and-morty-guide/features/characters-list/src/main/res/layout/list_item_character.xml" value="0.2" />
+        <entry key="..\:/Users/Chocomilk/AndroidStudioProjects/rick-and-morty-guide/features/characters-list/src/main/res/layout/load_state_item.xml" value="0.259375" />
         <entry key="..\:/Users/Chocomilk/AndroidStudioProjects/rick-and-morty-guide/features/characters-list/src/main/res/menu/appbar_menu.xml" value="0.2129115006412997" />
       </map>
     </option>

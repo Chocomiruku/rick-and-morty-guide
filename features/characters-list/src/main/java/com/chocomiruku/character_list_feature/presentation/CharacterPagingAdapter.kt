@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.net.toUri
 import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,14 +17,16 @@ import com.chocomiruku.character_list_feature.R
 import com.chocomiruku.character_list_feature.databinding.ListItemCharacterBinding
 import com.chocomiruku.core.domain.Character
 
-class CharacterAdapter :
-    ListAdapter<Character, CharacterAdapter.ViewHolder>(FactDiffCallback()) {
+class CharacterPagingAdapter :
+    PagingDataAdapter<Character, CharacterPagingAdapter.ViewHolder>(CharacterDiffCallback()) {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val character = getItem(position)
-        holder.bind(character)
-        holder.itemView.setOnClickListener {
-            holder.navigateToCharacter(character, holder.itemView)
+        character?.let {
+            holder.bind(character)
+            holder.itemView.setOnClickListener {
+                holder.navigateToCharacter(character, holder.itemView)
+            }
         }
     }
 
@@ -78,7 +81,7 @@ class CharacterAdapter :
     }
 
 
-    class FactDiffCallback :
+    class CharacterDiffCallback :
         DiffUtil.ItemCallback<Character>() {
 
         override fun areItemsTheSame(oldItem: Character, newItem: Character): Boolean {
