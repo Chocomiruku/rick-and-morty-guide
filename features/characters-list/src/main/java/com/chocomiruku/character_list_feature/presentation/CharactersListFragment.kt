@@ -42,7 +42,7 @@ class CharactersListFragment : Fragment() {
         _binding = FragmentCharactersListBinding.inflate(inflater, container, false)
 
         setup()
-        bindLoadingStates(CharactersLoadStateAdapter { characterPagingAdapter.retry() })
+        bindLoadingStates()
 
         return binding.root
     }
@@ -54,14 +54,7 @@ class CharactersListFragment : Fragment() {
         val searchItem = menu.findItem(R.id.search)
         val searchView = searchItem.actionView as SearchView
 
-        lifecycleScope.launch {
-            searchView.getQueryTextChangeStateFlow()
-                .debounce(300)
-                .distinctUntilChanged()
-                .collectLatest { query ->
-                    bindCharactersList(query)
-                }
-        }
+        bindSearch(searchView)
     }
 
     private fun setup() {
@@ -74,10 +67,11 @@ class CharactersListFragment : Fragment() {
         characterPagingAdapter.stateRestorationPolicy =
             RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-        binding.charactersList.adapter = characterPagingAdapter.withLoadStateHeaderAndFooter(
-            header = CharactersLoadStateAdapter { characterPagingAdapter.retry() },
+        binding.charactersList.adapter = characterPagingAdapter.withLoadStateFooter(
             footer = CharactersLoadStateAdapter { characterPagingAdapter.retry() }
         )
+
+        binding.swipeRefresh.setOnRefreshListener { characterPagingAdapter.retry() }
     }
 
     private fun bindCharactersList(query: String) {
@@ -87,24 +81,32 @@ class CharactersListFragment : Fragment() {
         }
     }
 
-    private fun bindLoadingStates(header: CharactersLoadStateAdapter) {
+    private fun bindSearch(searchView: SearchView) {
         lifecycleScope.launch {
-            characterPagingAdapter.loadStateFlow.collect { loadState ->
-                header.loadState = loadState.mediator
-                    ?.refresh
-                    ?.takeIf { it is LoadState.Error && characterPagingAdapter.itemCount > 0 }
-                    ?: loadState.prepend
+            searchView.getQueryTextChangeStateFlow()
+                .debounce(300)
+                .distinctUntilChanged()
+                .collectLatest { query ->
+                    bindCharactersList(query)
+                }
+        }
+    }
 
-                val isListEmpty = loadState.refresh is LoadState.NotLoading && characterPagingAdapter.itemCount == 0
-                binding.emptyList.isVisible = isListEmpty
-
+    private fun bindLoadingStates() {
+        lifecycleScope.launch {
+            characterPagingAdapter.loadStateFlow.collectLatest { loadState ->
                 binding.charactersList.isVisible =
                     loadState.source.refresh is LoadState.NotLoading || loadState.mediator?.refresh is LoadState.NotLoading
 
                 binding.progressIndicator.isVisible =
                     loadState.mediator?.refresh is LoadState.Loading
 
-                val isInitialRefreshFailed = loadState.mediator?.refresh is LoadState.Error && characterPagingAdapter.itemCount == 0
+//                val isListEmpty =
+//                    loadState.source.refresh is LoadState.NotLoading && characterPagingAdapter.itemCount == 0
+//                binding.emptyList.isVisible = isListEmpty
+
+                val isInitialRefreshFailed =
+                    loadState.mediator?.refresh is LoadState.Error && characterPagingAdapter.itemCount == 0
                 binding.retryButton.isVisible = isInitialRefreshFailed
 
                 if (isInitialRefreshFailed) {

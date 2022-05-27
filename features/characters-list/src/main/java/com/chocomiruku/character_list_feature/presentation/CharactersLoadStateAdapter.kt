@@ -1,5 +1,6 @@
 package com.chocomiruku.character_list_feature.presentation
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.view.isVisible

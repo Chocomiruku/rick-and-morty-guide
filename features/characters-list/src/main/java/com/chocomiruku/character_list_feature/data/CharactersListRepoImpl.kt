@@ -29,8 +29,7 @@ class CharactersListRepoImpl @Inject constructor(
         return Pager(
             config = PagingConfig(
                 pageSize = NETWORK_PAGE_SIZE,
-                enablePlaceholders = false,
-//                initialLoadSize = NETWORK_PAGE_SIZE
+                enablePlaceholders = true
             ),
             remoteMediator = remoteMediator,
             pagingSourceFactory = pagingSourceFactory
