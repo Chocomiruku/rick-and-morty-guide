@@ -5,5 +5,5 @@ import com.chocomiruku.core.domain.Character
 import kotlinx.coroutines.flow.Flow
 
 interface CharactersListRepo {
-    fun getCharacters(): Flow<PagingData<Character>>
+    fun getCharacters(searchQuery: String): Flow<PagingData<Character>>
 }

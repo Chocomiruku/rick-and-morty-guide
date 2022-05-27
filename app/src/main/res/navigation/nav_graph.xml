@@ -20,12 +20,10 @@
         android:id="@+id/characterDetailsFragment"
         android:name="com.chocomiruku.character_details_feature.presentation.CharacterDetailsFragment"
         android:label="CharacterDetailsFragment">
-        <argument
-            android:name="characterId" />
+        <argument android:name="characterId" />
         <deepLink
             android:id="@+id/deepLink"
-            app:uri="android-app://character-details-feature/{characterId}"
-            />
+            app:uri="android-app://character-details-feature/{characterId}" />
     </fragment>
 
 </navigation>

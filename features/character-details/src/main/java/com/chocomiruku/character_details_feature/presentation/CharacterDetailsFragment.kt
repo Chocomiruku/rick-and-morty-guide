@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.chocomiruku.character_details_feature.R
+import com.chocomiruku.core_ui.R
 import com.chocomiruku.character_details_feature.databinding.FragmentCharacterDetailsBinding
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -33,7 +33,7 @@ class CharacterDetailsFragment : Fragment() {
     }
 
     private fun bindViewModel() {
-        viewModel.getCharacter(arguments?.getString("characterId")?.toInt() ?: 0)
+        viewModel.getCharacter(arguments?.getString(CHARACTER_ID_KEY)?.toInt() ?: 0)
             .observe(viewLifecycleOwner) {
                 binding.nameText.text = it.name
                 updateTitle(it.name)
@@ -42,8 +42,9 @@ class CharacterDetailsFragment : Fragment() {
                 binding.statusText.text = it.status
                 binding.speciesText.text = it.species
                 binding.creationDateText.text = it.creationDate
+
                 val imgUri =
-                    it.profilePicUrl.toUri().buildUpon().scheme("https").build()
+                    it.profilePicUrl.toUri().buildUpon().scheme(SCHEME).build()
                 Glide.with(binding.characterPic.context)
                     .load(imgUri)
                     .apply(
@@ -58,5 +59,10 @@ class CharacterDetailsFragment : Fragment() {
 
     private fun updateTitle(characterName: String) {
         (activity as AppCompatActivity).supportActionBar?.title = characterName
+    }
+
+    private companion object {
+        const val SCHEME = "https"
+        const val CHARACTER_ID_KEY = "characterId"
     }
 }

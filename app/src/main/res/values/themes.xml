@@ -13,29 +13,7 @@
         <item name="android:statusBarColor">@color/gray_900</item>
         <!-- Tool bar style. -->
         <item name="toolbarStyle">@style/Widget.App.Toolbar</item>
-    </style>
-
-    <style name="Widget.App.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
-        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Toolbar</item>
-        <item name="titleTextAppearance">@style/TextAppearance.App.Headline6</item>
-        <item name="subtitleTextAppearance">@style/TextAppearance.App.Subtitle1</item>
-    </style>
-
-    <style name="ThemeOverlay.App.Toolbar" parent="">
-        <item name="colorPrimary">@color/gray_10</item>
-        <item name="colorPrimaryVariant">@color/gray_50</item>
-        <item name="colorOnPrimary">@color/gray_900</item>
-        <item name="titleCentered">false</item>
-    </style>
-
-    <style name="TextAppearance.App.Headline6" parent="TextAppearance.MaterialComponents.Headline6">
-        <item name="fontFamily">@font/roboto_regular</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
-        <item name="android:textSize">18sp</item>
-    </style>
-
-    <style name="TextAppearance.App.Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">
-        <item name="fontFamily">@font/roboto_regular</item>
-        <item name="android:fontFamily">@font/roboto_regular</item>
+        <!-- Button style. -->
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
     </style>
 </resources>

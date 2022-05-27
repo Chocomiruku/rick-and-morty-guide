@@ -33,7 +33,7 @@
                 app:layout_constraintEnd_toEndOf="@id/guideline_middle"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/test" />
+                tools:src="@tools:sample/avatars" />
 
             <TextView
                 android:id="@+id/name_label"

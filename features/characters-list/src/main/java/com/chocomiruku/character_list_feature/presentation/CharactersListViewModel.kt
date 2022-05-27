@@ -12,9 +12,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CharactersListViewModel @Inject constructor(
-    getCharactersUseCase: GetCharactersUseCase
+    private val getCharactersUseCase: GetCharactersUseCase
 ) : ViewModel() {
 
-    val charactersPagingDataFlow: Flow<PagingData<Character>> = getCharactersUseCase()
-        .cachedIn(viewModelScope)
+    fun getCharactersFlow(searchQuery: String): Flow<PagingData<Character>> =
+        getCharactersUseCase(searchQuery)
+            .cachedIn(viewModelScope)
 }

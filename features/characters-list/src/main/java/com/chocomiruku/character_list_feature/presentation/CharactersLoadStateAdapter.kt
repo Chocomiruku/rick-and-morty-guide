@@ -37,7 +37,7 @@ class CharactersLoadStateViewHolder(
 
     fun bind(loadState: LoadState) {
         if (loadState is LoadState.Error) {
-            binding.errorText.text = itemView.context.getString(R.string.connection_error)
+            binding.errorText.text = itemView.context.getString(R.string.generic_error)
         }
         binding.progressIndicator.isVisible = loadState is LoadState.Loading
         binding.retryBtn.isVisible = loadState is LoadState.Error

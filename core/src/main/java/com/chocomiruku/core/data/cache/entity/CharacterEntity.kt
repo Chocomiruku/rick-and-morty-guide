@@ -27,17 +27,3 @@ fun CharacterEntity.asDomainModel(): Character {
         profilePicUrl = profilePicUrl
     )
 }
-
-fun List<CharacterEntity>.asDomainModel(): List<Character> {
-    return map {
-        Character(
-            id = it.id,
-            name = it.name,
-            gender = it.gender,
-            status = it.status,
-            species = it.species,
-            creationDate = it.creationDate,
-            profilePicUrl = it.profilePicUrl
-        )
-    }
-}

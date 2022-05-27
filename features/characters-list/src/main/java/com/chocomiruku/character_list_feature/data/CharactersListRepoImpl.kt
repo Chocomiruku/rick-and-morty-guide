@@ -20,19 +20,19 @@ class CharactersListRepoImpl @Inject constructor(
     private val database: CharactersDatabase
 ) : CharactersListRepo {
 
-    override fun getCharacters(): Flow<PagingData<Character>> {
-        val pagingSourceFactory = { database.charactersDao().getAll() }
+    override fun getCharacters(searchQuery: String): Flow<PagingData<Character>> {
+        val pagingSourceFactory = { database.charactersDao().getCharactersByName(searchQuery) }
+        val remoteMediator = CharactersRemoteMediator(service, database)
+        remoteMediator.updateQuery(searchQuery)
 
         @OptIn(ExperimentalPagingApi::class)
         return Pager(
             config = PagingConfig(
                 pageSize = NETWORK_PAGE_SIZE,
-                enablePlaceholders = false
+                enablePlaceholders = false,
+//                initialLoadSize = NETWORK_PAGE_SIZE
             ),
-            remoteMediator = CharactersRemoteMediator(
-                service,
-                database
-            ),
+            remoteMediator = remoteMediator,
             pagingSourceFactory = pagingSourceFactory
         ).flow.map { pagingData ->
             pagingData.map {
@@ -41,7 +41,7 @@ class CharactersListRepoImpl @Inject constructor(
         }
     }
 
-    companion object {
+    private companion object {
         const val NETWORK_PAGE_SIZE = 20
     }
 }

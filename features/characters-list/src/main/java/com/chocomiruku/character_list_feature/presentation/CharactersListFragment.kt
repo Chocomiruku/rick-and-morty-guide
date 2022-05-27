@@ -13,15 +13,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
-import androidx.paging.filter
 import androidx.recyclerview.widget.RecyclerView
 import com.chocomiruku.character_list_feature.R
 import com.chocomiruku.character_list_feature.databinding.FragmentCharactersListBinding
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -43,21 +43,24 @@ class CharactersListFragment : Fragment() {
 
         setup()
         bindLoadingStates(CharactersLoadStateAdapter { characterPagingAdapter.retry() })
-        bindCharactersList(EMPTY_QUERY)
 
         return binding.root
     }
 
+    @OptIn(FlowPreview::class)
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.appbar_menu, menu)
 
         val searchItem = menu.findItem(R.id.search)
         val searchView = searchItem.actionView as SearchView
 
-
-        searchView.onQueryTextChanged { query ->
-            bindCharactersList(query)
-            binding.charactersList.scrollToPosition(0)
+        lifecycleScope.launch {
+            searchView.getQueryTextChangeStateFlow()
+                .debounce(300)
+                .distinctUntilChanged()
+                .collectLatest { query ->
+                    bindCharactersList(query)
+                }
         }
     }
 
@@ -79,26 +82,21 @@ class CharactersListFragment : Fragment() {
 
     private fun bindCharactersList(query: String) {
         lifecycleScope.launch {
-            viewModel.charactersPagingDataFlow
-                .distinctUntilChanged()
-                .collect { pagingData ->
-                    characterPagingAdapter.submitData(pagingData.filter { character ->
-                        character.name.lowercase().contains(query.lowercase())
-                    })
-                    binding.charactersList.scrollToPosition(0)
-                }
+            viewModel.getCharactersFlow(query)
+                .collectLatest(characterPagingAdapter::submitData)
         }
     }
 
     private fun bindLoadingStates(header: CharactersLoadStateAdapter) {
         lifecycleScope.launch {
             characterPagingAdapter.loadStateFlow.collect { loadState ->
-                // Shows header when initial refresh fails
                 header.loadState = loadState.mediator
                     ?.refresh
                     ?.takeIf { it is LoadState.Error && characterPagingAdapter.itemCount > 0 }
                     ?: loadState.prepend
 
+                val isListEmpty = loadState.refresh is LoadState.NotLoading && characterPagingAdapter.itemCount == 0
+                binding.emptyList.isVisible = isListEmpty
 
                 binding.charactersList.isVisible =
                     loadState.source.refresh is LoadState.NotLoading || loadState.mediator?.refresh is LoadState.NotLoading
@@ -106,25 +104,22 @@ class CharactersListFragment : Fragment() {
                 binding.progressIndicator.isVisible =
                     loadState.mediator?.refresh is LoadState.Loading
 
-                binding.retryButton.isVisible =
-                    loadState.mediator?.refresh is LoadState.Error && characterPagingAdapter.itemCount == 0
+                val isInitialRefreshFailed = loadState.mediator?.refresh is LoadState.Error && characterPagingAdapter.itemCount == 0
+                binding.retryButton.isVisible = isInitialRefreshFailed
+
+                if (isInitialRefreshFailed) {
+                    showSnackBarError()
+                }
             }
-        }
-
-
-        lifecycleScope.launch {
-            characterPagingAdapter.loadStateFlow
-                .filter { loadState ->
-                    loadState.mediator?.refresh is LoadState.Error
-                }
-                .collect {
-                    showSnackBarConnectionError()
-                }
         }
     }
 
-    private fun showSnackBarConnectionError() {
-        Snackbar.make(binding.charactersList, R.string.connection_error, Snackbar.LENGTH_LONG)
+    private fun showSnackBarError() {
+        Snackbar.make(
+            binding.retryButton,
+            R.string.network_connection_error,
+            Snackbar.LENGTH_LONG
+        )
             .show()
     }
 }

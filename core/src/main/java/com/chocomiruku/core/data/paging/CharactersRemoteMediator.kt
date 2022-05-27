@@ -22,6 +22,12 @@ class CharactersRemoteMediator @Inject constructor(
     private val charactersDatabase: CharactersDatabase
 ) : RemoteMediator<Int, CharacterEntity>() {
 
+    private var searchQuery = INITIAL_EMPTY_QUERY
+
+    fun updateQuery(query: String) {
+        searchQuery = query
+    }
+
     override suspend fun initialize(): InitializeAction {
         return InitializeAction.LAUNCH_INITIAL_REFRESH
     }
@@ -51,7 +57,7 @@ class CharactersRemoteMediator @Inject constructor(
         }
 
         try {
-            val apiResponse = service.getCharacters(page)
+            val apiResponse = service.getCharacters(page, searchQuery)
 
             val characters = apiResponse.results
             val endOfPaginationReached = apiResponse.info.next == null
@@ -69,6 +75,9 @@ class CharactersRemoteMediator @Inject constructor(
         } catch (exception: IOException) {
             return MediatorResult.Error(exception)
         } catch (exception: HttpException) {
+            if (exception.code() == NOT_FOUND && searchQuery.isNotEmpty()) {
+                return MediatorResult.Success(endOfPaginationReached = false)
+            }
             return MediatorResult.Error(exception)
         }
     }
@@ -95,5 +104,10 @@ class CharactersRemoteMediator @Inject constructor(
                 charactersDatabase.remoteKeysDao().remoteKeysCharacterId(characterId)
             }
         }
+    }
+
+    private companion object {
+        const val INITIAL_EMPTY_QUERY = ""
+        const val NOT_FOUND = 404
     }
 }

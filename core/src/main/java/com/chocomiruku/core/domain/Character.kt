@@ -13,4 +13,3 @@ data class Character(
     val creationDate: String,
     val profilePicUrl: String
 ) : Parcelable
-

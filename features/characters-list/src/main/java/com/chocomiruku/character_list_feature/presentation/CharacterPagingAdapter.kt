@@ -9,13 +9,12 @@ import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.chocomiruku.character_list_feature.R
 import com.chocomiruku.character_list_feature.databinding.ListItemCharacterBinding
 import com.chocomiruku.core.domain.Character
+import com.chocomiruku.core_ui.R
 
 class CharacterPagingAdapter :
     PagingDataAdapter<Character, CharacterPagingAdapter.ViewHolder>(CharacterDiffCallback()) {
@@ -50,14 +49,15 @@ class CharacterPagingAdapter :
                     .build()
 
 
-            val uri = Uri.parse("android-app://character-details-feature/${character.id}")
+            val uri = Uri.parse("${DETAILS_DEEPLINK}${character.id}")
             view.findNavController().navigate(uri, navOptions)
         }
 
         fun bind(character: Character) {
             binding.nameText.text = character.name
 
-            val imgUri = character.profilePicUrl.toUri().buildUpon().scheme("https").build()
+            val imgUri = character.profilePicUrl.toUri().buildUpon().scheme(SCHEME).build()
+
             Glide.with(binding.characterPic.context)
                 .load(imgUri)
                 .apply(
@@ -91,5 +91,10 @@ class CharacterPagingAdapter :
         override fun areContentsTheSame(oldItem: Character, newItem: Character): Boolean {
             return oldItem == newItem
         }
+    }
+
+    private companion object {
+        const val DETAILS_DEEPLINK = "android-app://character-details-feature/"
+        const val SCHEME = "https"
     }
 }
