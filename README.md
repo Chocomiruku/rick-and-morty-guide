@@ -29,5 +29,5 @@ ___
 
 Сетевая ошибка             | 
 :-------------------------:|
-<img src="screenshots/5.jpg" width="200" height="400">| 
+<img src="screenshots/5.jpg" width="350" height="550">| 
 
