@@ -126,7 +126,7 @@ class CharactersListFragment : Fragment() {
 
                 if (initialRefreshFailed || refreshFailed) {
                     showSnackBarError()
-                    binding.charactersList.scrollToPosition(0)
+                    binding.charactersList.scrollToPosition(TOP_POSITION)
                 }
             }
         }
@@ -139,5 +139,9 @@ class CharactersListFragment : Fragment() {
             Snackbar.LENGTH_LONG
         )
             .show()
+    }
+
+    private companion object {
+        const val TOP_POSITION = 0
     }
 }
