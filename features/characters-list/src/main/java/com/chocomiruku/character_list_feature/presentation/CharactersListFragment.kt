@@ -42,7 +42,7 @@ class CharactersListFragment : Fragment() {
         _binding = FragmentCharactersListBinding.inflate(inflater, container, false)
 
         setup()
-        bindLoadingStates()
+        bindPagingAdapter()
 
         return binding.root
     }
@@ -61,17 +61,21 @@ class CharactersListFragment : Fragment() {
         setHasOptionsMenu(true)
         (activity as AppCompatActivity).supportActionBar?.title =
             getString(R.string.characters_list)
+    }
 
+    private fun bindPagingAdapter() {
         binding.retryButton.setOnClickListener { characterPagingAdapter.retry() }
 
         characterPagingAdapter.stateRestorationPolicy =
             RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
-        binding.charactersList.adapter = characterPagingAdapter.withLoadStateFooter(
+        val header = CharactersLoadStateAdapter { characterPagingAdapter.retry() }
+        bindLoadingStates(header)
+
+        binding.charactersList.adapter = characterPagingAdapter.withLoadStateHeaderAndFooter(
+            header = header,
             footer = CharactersLoadStateAdapter { characterPagingAdapter.retry() }
         )
-
-        binding.swipeRefresh.setOnRefreshListener { characterPagingAdapter.retry() }
     }
 
     private fun bindCharactersList(query: String) {
@@ -81,6 +85,7 @@ class CharactersListFragment : Fragment() {
         }
     }
 
+    @OptIn(FlowPreview::class)
     private fun bindSearch(searchView: SearchView) {
         lifecycleScope.launch {
             searchView.getQueryTextChangeStateFlow()
@@ -92,25 +97,36 @@ class CharactersListFragment : Fragment() {
         }
     }
 
-    private fun bindLoadingStates() {
+    private fun bindLoadingStates(header: CharactersLoadStateAdapter) {
         lifecycleScope.launch {
             characterPagingAdapter.loadStateFlow.collectLatest { loadState ->
+                // Show header when initial refresh failed but cache is not empty
+                header.loadState = loadState.mediator
+                    ?.refresh
+                    ?.takeIf { it is LoadState.Error && characterPagingAdapter.itemCount > 0 }
+                    ?: loadState.prepend
+
                 binding.charactersList.isVisible =
                     loadState.source.refresh is LoadState.NotLoading || loadState.mediator?.refresh is LoadState.NotLoading
 
                 binding.progressIndicator.isVisible =
                     loadState.mediator?.refresh is LoadState.Loading
 
-//                val isListEmpty =
-//                    loadState.source.refresh is LoadState.NotLoading && characterPagingAdapter.itemCount == 0
-//                binding.emptyList.isVisible = isListEmpty
+                val isListEmpty = loadState.source.refresh is LoadState.NotLoading
+                        && loadState.mediator?.refresh is LoadState.NotLoading
+                        && characterPagingAdapter.itemCount == 0
+                binding.emptyList.isVisible = isListEmpty
 
-                val isInitialRefreshFailed =
+                val initialRefreshFailed =
                     loadState.mediator?.refresh is LoadState.Error && characterPagingAdapter.itemCount == 0
-                binding.retryButton.isVisible = isInitialRefreshFailed
+                binding.retryButton.isVisible = initialRefreshFailed
 
-                if (isInitialRefreshFailed) {
+                val refreshFailed =
+                    loadState.mediator?.refresh is LoadState.Error || loadState.source.refresh is LoadState.Error
+
+                if (initialRefreshFailed || refreshFailed) {
                     showSnackBarError()
+                    binding.charactersList.scrollToPosition(0)
                 }
             }
         }
