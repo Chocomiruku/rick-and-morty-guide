@@ -76,7 +76,7 @@ class CharactersRemoteMediator @Inject constructor(
             return MediatorResult.Error(exception)
         } catch (exception: HttpException) {
             if (exception.code() == NOT_FOUND && searchQuery.isNotEmpty()) {
-                return MediatorResult.Success(endOfPaginationReached = false)
+                return MediatorResult.Success(endOfPaginationReached = true)
             }
             return MediatorResult.Error(exception)
         }
