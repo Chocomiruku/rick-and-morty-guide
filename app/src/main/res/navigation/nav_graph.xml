@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/charactersListFragment">
+
+    <fragment
+        android:id="@+id/charactersListFragment"
+        android:name="com.chocomiruku.character_list_feature.presentation.CharactersListFragment"
+        android:label="CharactersListFragment">
+
+        <argument
+            android:name="characterId"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_charactersListFragment_to_characterDetailsFragment"
+            app:destination="@id/characterDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/characterDetailsFragment"
+        android:name="com.chocomiruku.character_details_feature.presentation.CharacterDetailsFragment"
+        android:label="CharacterDetailsFragment">
+        <argument android:name="characterId" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="android-app://character-details-feature/{characterId}" />
+    </fragment>
+
+</navigation>

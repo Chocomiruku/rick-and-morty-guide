@@ -1,0 +1,11 @@
+<resources>
+    <string name="go_to_details_content_description">Go to Details</string>
+    <string name="network_connection_error">Failed to connect to server. Please check you network connection.</string>
+    <string name="generic_error">Fetch failed.</string>
+    <string name="search">Search</string>
+    <string name="content_description_search">Search characters</string>
+    <string name="characters_list">Character List</string>
+    <string name="retry">Retry</string>
+    <string name="no_results">No results :(</string>
+    <string name="fetch_error">Fetch failed.</string>
+</resources>
