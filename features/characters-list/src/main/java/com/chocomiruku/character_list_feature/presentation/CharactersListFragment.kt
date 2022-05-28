@@ -42,7 +42,6 @@ class CharactersListFragment : Fragment() {
         _binding = FragmentCharactersListBinding.inflate(inflater, container, false)
 
         setup()
-        bindPagingAdapter()
 
         return binding.root
     }
@@ -54,6 +53,7 @@ class CharactersListFragment : Fragment() {
         val searchItem = menu.findItem(R.id.search)
         val searchView = searchItem.actionView as SearchView
 
+        bindPagingAdapter()
         bindSearch(searchView)
     }
 
@@ -89,7 +89,7 @@ class CharactersListFragment : Fragment() {
     private fun bindSearch(searchView: SearchView) {
         lifecycleScope.launch {
             searchView.getQueryTextChangeStateFlow()
-                .debounce(300)
+                .debounce(SEARCH_TIMEOUT)
                 .distinctUntilChanged()
                 .collectLatest { query ->
                     bindCharactersList(query)
@@ -143,5 +143,6 @@ class CharactersListFragment : Fragment() {
 
     private companion object {
         const val TOP_POSITION = 0
+        const val SEARCH_TIMEOUT = 300L
     }
 }
