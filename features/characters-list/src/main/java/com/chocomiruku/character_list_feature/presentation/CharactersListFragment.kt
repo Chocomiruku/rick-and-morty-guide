@@ -53,8 +53,8 @@ class CharactersListFragment : Fragment() {
         val searchItem = menu.findItem(R.id.search)
         val searchView = searchItem.actionView as SearchView
 
-        bindPagingAdapter()
         bindSearch(searchView)
+        bindPagingAdapter()
     }
 
     private fun setup() {
@@ -103,7 +103,7 @@ class CharactersListFragment : Fragment() {
                 // Show header when initial refresh failed but cache is not empty
                 header.loadState = loadState.mediator
                     ?.refresh
-                    ?.takeIf { it is LoadState.Error && characterPagingAdapter.itemCount > 0 }
+                    ?.takeIf { it !is LoadState.NotLoading && characterPagingAdapter.itemCount > 0 }
                     ?: loadState.prepend
 
                 binding.charactersList.isVisible =
