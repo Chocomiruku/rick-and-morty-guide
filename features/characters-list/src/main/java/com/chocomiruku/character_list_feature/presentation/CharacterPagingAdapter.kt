@@ -48,7 +48,6 @@ class CharacterPagingAdapter :
                     .setPopExitAnim(R.anim.pop_exit_anim)
                     .build()
 
-
             val uri = Uri.parse("${DETAILS_DEEPLINK}${character.id}")
             view.findNavController().navigate(uri, navOptions)
         }
@@ -65,6 +64,7 @@ class CharacterPagingAdapter :
                         .placeholder(R.drawable.loading_anim)
                         .centerInside()
                         .error(R.drawable.ic_broken_image)
+                        .centerInside()
                 )
                 .into(binding.characterPic)
         }
