@@ -67,7 +67,7 @@ class CharactersListFragment : Fragment() {
         binding.retryButton.setOnClickListener { characterPagingAdapter.retry() }
 
         characterPagingAdapter.stateRestorationPolicy =
-            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+            RecyclerView.Adapter.StateRestorationPolicy.ALLOW
 
         val header = CharactersLoadStateAdapter { characterPagingAdapter.retry() }
         bindLoadingStates(header)
