@@ -61,6 +61,11 @@ class CharacterDetailsFragment : Fragment() {
         (activity as AppCompatActivity).supportActionBar?.title = characterName
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private companion object {
         const val SCHEME = "https"
         const val CHARACTER_ID_KEY = "characterId"

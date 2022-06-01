@@ -42,6 +42,7 @@ class CharactersListFragment : Fragment() {
         _binding = FragmentCharactersListBinding.inflate(inflater, container, false)
 
         setup()
+        bindPagingAdapter()
 
         return binding.root
     }
@@ -54,7 +55,6 @@ class CharactersListFragment : Fragment() {
         val searchView = searchItem.actionView as SearchView
 
         bindSearch(searchView)
-        bindPagingAdapter()
     }
 
     private fun setup() {
@@ -139,6 +139,11 @@ class CharactersListFragment : Fragment() {
             Snackbar.LENGTH_LONG
         )
             .show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     private companion object {
